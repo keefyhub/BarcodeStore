@@ -48,7 +48,6 @@ export default class App extends Component {
         try {
             const value = await AsyncStorage.getItem('@storage_Key');
             if (value !== null) {
-                console.log(JSON.parse(value));
                 this.setState({
                     data: JSON.parse(value),
                 });
