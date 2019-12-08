@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@react-native-community/art": "^1.0.3",
+    "@react-native-community/async-storage": "^1.6.3",
     "jsbarcode": "^3.11.0",
+    "prop-types": "^15.5.0",
     "react": "16.9.0",
     "react-native": "0.61.5"
   },

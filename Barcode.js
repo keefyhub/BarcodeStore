@@ -1,3 +1,5 @@
+// Taken from https://github.com/wonsikin/react-native-barcode-builder/pull/46/commits/0f061d1353e1dd6ec6f51a054f0e3693a66e6ec0
+
 import React, {PureComponent} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
@@ -183,10 +185,10 @@ export default class Barcode extends PureComponent {
 
         return (
             <View style={[styles.svgContainer, backgroundStyle]}>
-                <Surface height={this.props.height} width={this.state.barCodeWidth}>
+                <Surface style={styles.surface} height={this.props.height} width={this.state.barCodeWidth}>
                     <Shape d={this.state.bars} fill={this.props.lineColor} />
                 </Surface>
-                { typeof(this.props.text) != 'undefined' &&
+                { typeof(this.props.text) !== 'undefined' &&
                 <Text style={{color: this.props.textColor, width: this.state.barCodeWidth, textAlign: 'center'}} >{this.props.text}</Text>
                 }
             </View>
@@ -199,4 +201,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
     },
+    surface: {}
 });

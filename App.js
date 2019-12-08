@@ -12,12 +12,10 @@ import {
     SafeAreaView,
     StyleSheet,
     ActivityIndicator,
-    Dimensions,
-    Image,
+    Button,
     ScrollView,
-    View,
     Text,
-    StatusBar,
+    View,
 } from 'react-native';
 
 import {
@@ -29,6 +27,9 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import Barcode from './Barcode';
+import GeneratorForm from './GeneratorForm';
+
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class App extends Component {
     constructor(props) {
@@ -39,82 +40,132 @@ export default class App extends Component {
             windowWidth: 0,
             imageUrl: '',
             isLoading: true,
+            data: [],
         };
     }
+
+    getData = async () => {
+        try {
+            const value = await AsyncStorage.getItem('@storage_Key');
+            if (value !== null) {
+                this.setState({
+                    data: JSON.parse(value),
+                });
+            }
+        } catch (e) {
+            // error reading value
+        }
+    };
+
+    deleteData = async () => {
+        await AsyncStorage.removeItem('@storage_Key');
+        this.setState({
+            data: [],
+        });
+        console.log('deleted items');
+    };
 
     componentDidMount() {
-        const window = Dimensions.get('window');
+        this.getData();
+        // const window = Dimensions.get('window');
+        //
+        // this.setState({
+        //     windowHeight: window.height,
+        //     windowWidth: window.width,
+        // });
+        //
+        // const url = 'http://barcodes4.me/barcode/c128a/500015401.jpg';
+        // const options = {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     mode: 'cors',
+        //     cache: 'default',
+        // };
+        // const request = new Request(url);
+        //
+        // fetch(request, options).then((response) => {
+        //     // console.log(response.url);
+        //     this.setState({
+        //         image: {
+        //             type: 'uri',
+        //             url: response.url,
+        //         },
+        //         isLoading: false,
+        //     });
+        // });
 
         this.setState({
-            windowHeight: window.height,
-            windowWidth: window.width,
-        });
-
-        const url = 'http://barcodes4.me/barcode/c128a/500015401.jpg';
-        const options = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            mode: 'cors',
-            cache: 'default',
-        };
-        const request = new Request(url);
-
-        fetch(request, options).then((response) => {
-            // console.log(response.url);
-            this.setState({
-                image: {
-                    type: 'uri',
-                    url: response.url,
-                },
-                isLoading: false,
-            });
+            isLoading: false,
         });
     }
+
+    renderCode = (item, index) => {
+        return (
+            <View style={styles.spacing} key={index}>
+                <Text>Item from storage</Text>
+                <Barcode value={item.code} format="CODE128" text={item.code}/>
+            </View>
+        );
+    };
 
     loadRender() {
         return (
             <SafeAreaView>
-                <ScrollView
-                    contentInsetAdjustmentBehavior="automatic"
-                    style={styles.scrollView}>
-                    <ActivityIndicator size="large" color="#0000ff"/>
-                </ScrollView>
+                <ActivityIndicator size="large" color="#0000ff"/>
+                <Text>Loading</Text>
             </SafeAreaView>
         );
     }
 
     render() {
-        // const {isLoading} = this.state;
-        // if (isLoading) {
-        //     return this.loadRender();
-        // }
+        const {data, isLoading} = this.state;
+        if (isLoading) {
+            return this.loadRender();
+        }
+
+        let barcodesFromStorage = false;
+        if (data) {
+            barcodesFromStorage = Object.values(data).map((item, index) => {
+                return this.renderCode(item, index);
+            });
+        }
 
         return (
             <SafeAreaView style={[styles.container]}>
-                <View style={styles.view}>
-                    <Barcode value="500015401" format="CODE128" text="Red spider code"/>
-                </View>
+                <ScrollView style={styles.scrollView}>
+                    <GeneratorForm/>
+                    {barcodesFromStorage}
+                    <Button
+                        title='Delete codes'
+                        onPress={() => this.deleteData()}
+                    />
+                    {/*<View style={styles.view}>*/}
+                    {/*<Barcode value="500015401" format="CODE128" text="Red spider code"/>*/}
+                    {/*</View>*/}
+                </ScrollView>
             </SafeAreaView>
-        )
-            ;
+        );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#cb2b2e',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: Colors.lighter,
         flex: 1,
     },
+    scrollView: {
+    },
     view: {
-        backgroundColor: Colors.light
-    }
+        // backgroundColor: Colors.light,
+    },
+    spacing: {
+        marginBottom: 20,
+        marginTop: 20,
+    },
 });
 
-//
 // const App: () => React$Node = () => {
 //     componentDidMount();
 //     {
