@@ -48,6 +48,7 @@ export default class App extends Component {
         try {
             const value = await AsyncStorage.getItem('@storage_Key');
             if (value !== null) {
+                console.log(JSON.parse(value));
                 this.setState({
                     data: JSON.parse(value),
                 });
@@ -63,6 +64,16 @@ export default class App extends Component {
             data: [],
         });
         console.log('deleted items');
+    };
+
+    deleteItem = async (item, index) => {
+        let items = await AsyncStorage.getItem('@storage_Key');
+        items = JSON.parse(items).filter((a, b) => index !== b);
+
+        this.setState({
+            data: items,
+        });
+        await AsyncStorage.setItem('@storage_Key', JSON.stringify(items));
     };
 
     componentDidMount() {
@@ -106,6 +117,7 @@ export default class App extends Component {
             <View style={styles.spacing} key={index}>
                 <Text>Item from storage</Text>
                 <Barcode value={item.code} format="CODE128" text={item.code}/>
+                <Button onPress={() => this.deleteItem(item, index)} title="Delete"/>
             </View>
         );
     };
