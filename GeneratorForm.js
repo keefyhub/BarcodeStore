@@ -1,13 +1,11 @@
 import React, {Component} from 'react';
 import {
-    Button, StyleSheet,
+    Button, SafeAreaView, ScrollView, StyleSheet,
     Text,
     TextInput,
     View,
 } from 'react-native';
-import Barcode from './Barcode';
 import AsyncStorage from '@react-native-community/async-storage';
-import Colors from 'react-native/Libraries/NewAppScreen/components/Colors';
 
 export default class GeneratorForm extends Component {
     constructor(props) {
@@ -50,54 +48,44 @@ export default class GeneratorForm extends Component {
 
     generateCode = () => {
         const {value} = this.state;
-
-        console.log(this.state.items);
-
+        const {navigate} = this.props.navigation;
         this.storeData(value);
-
-        return (
-            <View>
-                <Barcode value={value} format="CODE128"/>
-            </View>
-        );
-    };
-
-    showCode = () => {
-        this.setState({
-            showCode: true,
-        });
+        navigate('Home');
     };
 
     render() {
-        const {showCode} = this.state;
         return (
-            <View style={styles.form}>
-                {showCode &&
-                this.generateCode()
-                }
-                <View style={styles.spacing}>
-                    <Text style={styles.formText}>Input your barcode</Text>
-                    <TextInput
-                        style={styles.textInput}
-                        onChangeText={text => this.onChangeText(text)}
-                        defaultValue="Enter a barcode"
-                        value={this.state.value}
-                    />
-                </View>
-                <View style={styles.spacing}>
-                    <Text style={styles.small}>(NOTE - code128 only)</Text>
-                </View>
-                <Button
-                    title="Generate new code"
-                    onPress={() => this.showCode()}
-                />
-            </View>
-        )
-            ;
+            <SafeAreaView style={[styles.container]}>
+                <ScrollView style={styles.scrollView}>
+                    <View style={styles.form}>
+                        <View style={styles.spacing}>
+                            <Text style={styles.formText}>Input your barcode</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                onChangeText={text => this.onChangeText(text)}
+                                defaultValue="Enter a barcode"
+                                value={this.state.value}
+                            />
+                        </View>
+                        <View style={styles.spacing}>
+                            <Text style={styles.small}>(NOTE - code128 only)</Text>
+                        </View>
+                        <Button
+                            title="Generate new code"
+                            onPress={() => this.generateCode()}
+                        />
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        );
     }
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    scrollView: {},
     form: {
         flex: 1,
         alignItems: 'center',
