@@ -41,7 +41,7 @@ export default class SingleBarcode extends Component {
     };
 
     renderBarcode = (item) => {
-        return (<Barcode value={item.code} format="CODE128" text={item.code}/>);
+        return (<Barcode value={item.code} format={item.type} text={item.code}/>);
     };
 
     render() {
@@ -55,6 +55,11 @@ export default class SingleBarcode extends Component {
                         {item.code &&
                         this.renderBarcode(item)
                         }
+                        <View style={styles.spacing}>
+                            <Text>{item.label}</Text>
+                            <Text>{item.code}</Text>
+                            <Text>{item.type}</Text>
+                        </View>
                         <Button onPress={() => this.deleteItem(item, index)} title="Delete"/>
                     </View>
                 </ScrollView>

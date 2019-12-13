@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import {
-    Button, SafeAreaView, ScrollView, StyleSheet,
+    Button,
+    Picker,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
     Text,
     TextInput,
     View,
@@ -12,22 +16,31 @@ export default class GeneratorForm extends Component {
         super(props);
 
         this.state = {
+            name: '',
             value: '',
+            codeType: 'CODE39',
             showCode: false,
         };
     }
 
     onChangeText = (text) => {
         this.setState({
-            value: text,
-            showCode: false,
+            value: text
         });
     };
 
-    storeData = async (value) => {
+    handleNameChange = (name) => {
+        this.setState({
+            name: name
+        });
+    };
+
+    storeData = async (name, value, type) => {
         const items = await AsyncStorage.getItem('@storage_Key');
         const itemToBeSaved = {
+            label: name,
             code: value,
+            type: type,
         };
 
         let newItem = JSON.parse(items);
@@ -47,9 +60,9 @@ export default class GeneratorForm extends Component {
     };
 
     generateCode = () => {
-        const {value} = this.state;
+        const {name, value, codeType} = this.state;
         const {navigate} = this.props.navigation;
-        this.storeData(value);
+        this.storeData(name, value, codeType);
         navigate('Home');
     };
 
@@ -58,6 +71,15 @@ export default class GeneratorForm extends Component {
             <SafeAreaView style={[styles.container]}>
                 <ScrollView style={styles.scrollView}>
                     <View style={styles.form}>
+                        <View style={styles.spacing}>
+                            <Text style={styles.formText}>Name</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                onChangeText={text => this.handleNameChange(text)}
+                                defaultValue="Give it a name"
+                                value={this.state.name}
+                            />
+                        </View>
                         <View style={styles.spacing}>
                             <Text style={styles.formText}>Input your barcode</Text>
                             <TextInput
@@ -68,7 +90,13 @@ export default class GeneratorForm extends Component {
                             />
                         </View>
                         <View style={styles.spacing}>
-                            <Text style={styles.small}>(NOTE - code128 only)</Text>
+                            <Picker selectedValue={this.state.codeType}
+                                    style={[styles.onePicker]}
+                                    itemStyle={styles.onePickerItem}
+                                    onValueChange={(itemValue, itemIndex) => this.setState({codeType: itemValue})}>
+                                <Picker.Item label="CODE39" value="CODE39"/>
+                                <Picker.Item label="CODE128" value="CODE128"/>
+                            </Picker>
                         </View>
                         <Button
                             title="Generate new code"
@@ -111,5 +139,15 @@ const styles = StyleSheet.create({
         height: 40,
         borderColor: '#000',
         borderWidth: 1,
+    },
+    onePicker: {
+        width: 300,
+        height: 40,
+        backgroundColor: '#fff',
+        borderColor: '#000',
+        borderWidth: 1,
+    },
+    onePickerItem: {
+        height: 40,
     },
 });

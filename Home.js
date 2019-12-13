@@ -80,6 +80,8 @@ export default class Home extends Component {
 
         return (
             <View style={styles.spacing} key={index}>
+                <Text>{item.label}</Text>
+                <Text>{item.type}</Text>
                 <Text>{item.code}</Text>
                 <Button title="Open code" onPress={() => navigate('SingleBarcode', {item: item, index: index})}/>
             </View>
