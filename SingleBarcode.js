@@ -5,7 +5,9 @@ import {
     SafeAreaView,
     ScrollView,
     StyleSheet,
-    Text, View,
+    Text,
+    TouchableHighlight,
+    View,
 } from 'react-native';
 
 import {
@@ -14,6 +16,8 @@ import {
 
 import Barcode from './Barcode';
 import AsyncStorage from '@react-native-community/async-storage';
+import ThemeStyles from './ThemeStyles';
+import {NavigationEvents} from 'react-navigation';
 
 export default class SingleBarcode extends Component {
     constructor(props) {
@@ -23,8 +27,15 @@ export default class SingleBarcode extends Component {
         this.state = {
             item: navigation.getParam('item'),
             index: navigation.getParam('index'),
+            color: navigation.getParam('color'),
         };
     }
+
+    static navigationOptions = ({navigation}) => {
+        return {
+            title: navigation.state.params.item.label,
+        };
+    };
 
     deleteItem = async (item, index) => {
         const {navigate} = this.props.navigation;
@@ -45,32 +56,37 @@ export default class SingleBarcode extends Component {
     };
 
     render() {
-        const {item, index} = this.state;
+        const {item, index, color} = this.state;
         return (
-            <SafeAreaView style={[styles.container]}>
-                <ScrollView style={styles.scrollView}>
-                    <Text>Single Barcode page</Text>
-                    <View style={styles.spacing}>
-                        <Text>Item from storage</Text>
-                        {item.code &&
-                        this.renderBarcode(item)
-                        }
-                        <View style={styles.spacing}>
-                            <Text>{item.label}</Text>
-                            <Text>{item.code}</Text>
-                            <Text>{item.type}</Text>
-                        </View>
-                        <Button onPress={() => this.deleteItem(item, index)} title="Delete"/>
+            <View style={[ThemeStyles.themeWrapper, {backgroundColor: color}]}>
+                <SafeAreaView style={ThemeStyles.themeContainer}>
+                    <View style={ThemeStyles.container}>
+                        <ScrollView style={ThemeStyles.scrollView}>
+                            <View style={ThemeStyles.spacing}>
+                                {item.code && this.renderBarcode(item)}
+                                <View style={ThemeStyles.spacing}>
+                                    <Text style={[ThemeStyles.colorWhite, ThemeStyles.title]}>{item.label}</Text>
+                                    <Text style={ThemeStyles.colorWhite}>{item.code}</Text>
+                                    <Text style={ThemeStyles.colorWhite}>{item.type}</Text>
+                                </View>
+                            </View>
+                            <View style={[ThemeStyles.buttonRow, ThemeStyles.spacing]}>
+                                <TouchableHighlight style={ThemeStyles.button}
+                                                    onPress={() => this.deleteItem(item, index)}>
+                                    <Text style={ThemeStyles.buttonText}>Delete</Text>
+                                </TouchableHighlight>
+                            </View>
+                        </ScrollView>
                     </View>
-                </ScrollView>
-            </SafeAreaView>
+                </SafeAreaView>
+            </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.lighter,
+        // backgroundColor: Colors.lighter,
         flex: 1,
     },
     scrollView: {},

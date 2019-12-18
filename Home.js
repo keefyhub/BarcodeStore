@@ -10,12 +10,10 @@
 import React, {Component} from 'react';
 import {
     SafeAreaView,
-    StyleSheet,
     ActivityIndicator,
-    Alert,
-    Button,
     ScrollView,
     Text,
+    TouchableHighlight,
     View,
 } from 'react-native';
 
@@ -33,6 +31,8 @@ import GeneratorForm from './GeneratorForm';
 import AsyncStorage from '@react-native-community/async-storage';
 import {NavigationEvents} from 'react-navigation';
 
+import ThemeStyles from './ThemeStyles';
+
 export default class Home extends Component {
     constructor(props) {
         super(props);
@@ -45,6 +45,12 @@ export default class Home extends Component {
             data: [],
         };
     }
+
+    static navigationOptions = ({navigation}) => {
+        return {
+            title: 'Home',
+        };
+    };
 
     getData = async () => {
         try {
@@ -67,6 +73,22 @@ export default class Home extends Component {
         console.log('deleted items');
     };
 
+    addTestData = () => {
+        for (const index of [1, 2, 3, 4, 5].keys()) {
+            this.setState(state => {
+                const data = state.data.concat({
+                    code: '123456789',
+                    label: 'Test code' + index,
+                    type: 'CODE128',
+                });
+
+                return {
+                    data,
+                };
+            });
+        }
+    };
+
     componentDidMount() {
         this.getData();
 
@@ -75,15 +97,54 @@ export default class Home extends Component {
         });
     }
 
+    nthChild = (n) => {
+        if (n % 6 === 0) {
+            return '#87c5a4';
+        }
+
+        if (n % 5 === 0) {
+            return '#8ea9e8';
+        }
+
+        if (n % 4 === 0) {
+            return '#e7b788';
+        }
+
+        if (n % 3 === 0) {
+            return '#ec8d81';
+        }
+
+        if (n % 2 === 0) {
+            return '#8d82c4';
+        }
+
+        if (n % 1 === 0) {
+            return '#6fc3df';
+        }
+    };
+
     renderItem = (item, index) => {
         const {navigate} = this.props.navigation;
 
         return (
-            <View style={styles.spacing} key={index}>
-                <Text>{item.label}</Text>
-                <Text>{item.type}</Text>
-                <Text>{item.code}</Text>
-                <Button title="Open code" onPress={() => navigate('SingleBarcode', {item: item, index: index})}/>
+            <View style={[ThemeStyles.item, {backgroundColor: this.nthChild(index)}]}
+                  key={index}>
+                <TouchableHighlight style={ThemeStyles.itemInner}
+                                    onPress={() => navigate('SingleBarcode', {
+                                        item: item,
+                                        index: index,
+                                        color: this.nthChild(index),
+                                    })}>
+                    <View style={ThemeStyles.itemContent}>
+                        <Text style={[ThemeStyles.title, ThemeStyles.colorWhite]}>{item.label}</Text>
+                        <Text style={ThemeStyles.hidden}>{item.type}</Text>
+                        <Text style={ThemeStyles.hidden}>{item.code}</Text>
+                        <View style={ThemeStyles.triangleWrapper}>
+                            <View style={ThemeStyles.triangle}>
+                            </View>
+                        </View>
+                    </View>
+                </TouchableHighlight>
             </View>
         );
     };
@@ -113,29 +174,32 @@ export default class Home extends Component {
         }
 
         return (
-            <SafeAreaView style={[styles.container]}>
-                <ScrollView style={styles.scrollView}>
+            <View style={ThemeStyles.themeWrapper}>
+                <SafeAreaView style={ThemeStyles.themeContainer}>
                     <NavigationEvents onDidFocus={() => this.componentDidMount()}/>
-                    {storedItems}
-                    <Button style={styles.button} title='Generate new code' onPress={() => navigate('GenerateBarcode')}/>
-                    <Button style={styles.button} title='Delete all codes' onPress={() => this.deleteData()}/>
-                </ScrollView>
-            </SafeAreaView>
+                    <View style={ThemeStyles.container}>
+                        <Text style={ThemeStyles.title}>Saved barcodes</Text>
+                    </View>
+                    <ScrollView style={ThemeStyles.scrollView}>
+                        {storedItems}
+                    </ScrollView>
+                    <TouchableHighlight style={[ThemeStyles.button, ThemeStyles.fixedButton]}
+                                        onPress={() => navigate('GenerateBarcode')}>
+                        <Text style={[ThemeStyles.buttonText, ThemeStyles.buttonTextLarge]}>Generate new code</Text>
+                    </TouchableHighlight>
+                    <View style={ThemeStyles.hidden}>
+                        <TouchableHighlight style={ThemeStyles.button}
+                                            onPress={() => this.addTestData()}>
+                            <Text style={ThemeStyles.buttonText}>Add test data</Text>
+                        </TouchableHighlight>
+                    </View>
+                    <View style={ThemeStyles.hidden}>
+                        <TouchableHighlight style={ThemeStyles.button} onPress={() => this.deleteData()}>
+                            <Text style={ThemeStyles.buttonText}>Delete all codes</Text>
+                        </TouchableHighlight>
+                    </View>
+                </SafeAreaView>
+            </View>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        // backgroundColor: Colors.lighter,
-        flex: 1,
-    },
-    scrollView: {},
-    view: {
-        // backgroundColor: Colors.light,
-    },
-    spacing: {
-        marginBottom: 20,
-        marginTop: 20,
-    }
-});

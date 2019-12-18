@@ -5,25 +5,22 @@ import SingleBarcode from './SingleBarcode';
 import GenerateBarcode from './GeneratorForm';
 
 const MainNavigator = createStackNavigator({
-    Home: {
-        screen: Home,
-        navigationOptions: () => ({
-            title: 'Home',
-        }),
+        Home: Home,
+        SingleBarcode: SingleBarcode,
+        GenerateBarcode: GenerateBarcode,
     },
-    SingleBarcode: {
-        screen: SingleBarcode,
-        navigationOptions: ({navigation}) => ({
-            title: `Single barcode - ${navigation.state.params.item.code}`,
-        }),
-    },
-    GenerateBarcode: {
-        screen: GenerateBarcode,
-        navigationOptions: () => ({
-            title: 'Generate new barcode',
-        }),
-    },
-});
+    {
+        initialRouteName: 'Home',
+        defaultNavigationOptions: {
+            headerStyle: {
+                backgroundColor: '#f4511e',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        },
+    });
 
 const App = createAppContainer(MainNavigator);
 
