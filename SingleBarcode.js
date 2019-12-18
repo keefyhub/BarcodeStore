@@ -10,14 +10,9 @@ import {
     View,
 } from 'react-native';
 
-import {
-    Colors,
-} from 'react-native/Libraries/NewAppScreen';
-
 import Barcode from './Barcode';
 import AsyncStorage from '@react-native-community/async-storage';
 import ThemeStyles from './ThemeStyles';
-import {NavigationEvents} from 'react-navigation';
 
 export default class SingleBarcode extends Component {
     constructor(props) {
@@ -28,6 +23,7 @@ export default class SingleBarcode extends Component {
             item: navigation.getParam('item'),
             index: navigation.getParam('index'),
             color: navigation.getParam('color'),
+            data: navigation.getParam('data'),
         };
     }
 
@@ -35,6 +31,37 @@ export default class SingleBarcode extends Component {
         return {
             title: navigation.state.params.item.label,
         };
+    };
+
+    componentDidMount() {
+        const {item, index} = this.state;
+        this.updateData(item, index);
+    }
+
+    updateData = async (item, index) => {
+        const items = this.state.data;
+        const itemToBeSaved = {
+            label: item.label,
+            code: item.code,
+            type: item.type,
+            views: ++item.views,
+        };
+
+        let newItem = JSON.parse(items);
+        if (!newItem) {
+            newItem = [];
+        }
+        newItem[index] = itemToBeSaved;
+
+        console.log(item.views);
+
+        try {
+            await AsyncStorage.setItem('@storage_Key', JSON.stringify(newItem));
+            console.log('updated view count');
+        } catch (e) {
+            // saving error
+            console.log('error saving barcode');
+        }
     };
 
     deleteItem = async (item, index) => {

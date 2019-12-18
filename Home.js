@@ -134,10 +134,12 @@ export default class Home extends Component {
                                         item: item,
                                         index: index,
                                         color: this.nthChild(index),
+                                        data: JSON.stringify(this.state.data)
                                     })}>
                     <View style={ThemeStyles.itemContent}>
                         <Text style={[ThemeStyles.title, ThemeStyles.colorWhite]}>{item.label}</Text>
                         <Text style={ThemeStyles.hidden}>{item.type}</Text>
+                        <Text style={ThemeStyles.hidden}>{item.views}</Text>
                         <Text style={ThemeStyles.hidden}>{item.code}</Text>
                         <View style={ThemeStyles.triangleWrapper}>
                             <View style={ThemeStyles.triangle}>
@@ -168,6 +170,9 @@ export default class Home extends Component {
 
         let storedItems = false;
         if (data) {
+            data.sort((a, b) => {
+                return b.views > a.views ? 1 : -1;
+            });
             storedItems = Object.values(data).map((item, index) => {
                 return this.renderItem(item, index);
             });

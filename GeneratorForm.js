@@ -47,6 +47,7 @@ export default class GeneratorForm extends Component {
             label: name,
             code: value,
             type: type,
+            views: 0
         };
 
         let newItem = JSON.parse(items);
