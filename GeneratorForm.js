@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    Alert,
     Picker,
     SafeAreaView,
     ScrollView,
@@ -10,6 +11,8 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import ThemeStyles from './ThemeStyles';
+import barcodes from 'jsbarcode/src/barcodes';
+import PropTypes from 'prop-types';
 
 export default class GeneratorForm extends Component {
     constructor(props) {
@@ -20,6 +23,7 @@ export default class GeneratorForm extends Component {
             value: '',
             codeType: 'CODE39',
             showCode: false,
+            formats: Object.keys(barcodes),
         };
     }
 
@@ -41,13 +45,18 @@ export default class GeneratorForm extends Component {
         });
     };
 
+    onSubmitHandler = (event) => {
+        // console.log(event);
+        return event.focus();
+    };
+
     storeData = async (name, value, type) => {
         const items = await AsyncStorage.getItem('@storage_Key');
         const itemToBeSaved = {
             label: name,
             code: value,
             type: type,
-            views: 0
+            views: 0,
         };
 
         let newItem = JSON.parse(items);
@@ -72,6 +81,16 @@ export default class GeneratorForm extends Component {
 
         // Make sure fields are not empty
         if (name === '' || value === '' || codeType === '') {
+            Alert.alert(
+                'Code not created',
+                'Make sure all fields have values',
+                [
+                    {
+                        text: 'OK', onPress: () => console.log('OK Pressed'),
+                    },
+                ],
+            );
+
             return false;
         }
 
@@ -79,7 +98,16 @@ export default class GeneratorForm extends Component {
         navigate('Home');
     };
 
+    renderPickerItem = (item, index) => {
+        return (<Picker.Item label={item} value={item} key={index}/>);
+    };
+
     render() {
+        const {formats} = this.state;
+        const pickerItems = formats.map((item, index) => {
+            return this.renderPickerItem(item, index);
+        });
+
         return (
             <View style={ThemeStyles.themeWrapper}>
                 <SafeAreaView style={ThemeStyles.themeContainer}>
@@ -92,6 +120,11 @@ export default class GeneratorForm extends Component {
                                     onChangeText={text => this.handleNameChange(text)}
                                     defaultValue="Give it a name"
                                     value={this.state.name}
+                                    // enablesReturnKeyAutomatically="true"
+                                    returnKeyType="next"
+                                    clearButtonMode="while-editing"
+                                    onSubmitEditing={() => this.onSubmitHandler(this._barcode)}
+                                    ref={(input) => this._name = input}
                                 />
                             </View>
                             <View style={[ThemeStyles.spacing, ThemeStyles.stretch]}>
@@ -101,7 +134,10 @@ export default class GeneratorForm extends Component {
                                     onChangeText={text => this.onChangeText(text)}
                                     defaultValue="Enter a barcode"
                                     value={this.state.value}
-                                    keyboardType="number-pad"
+                                    // keyboardType="numeric"
+                                    // enablesReturnKeyAutomatically="true"
+                                    returnKeyType="next"
+                                    ref={(input) => this._barcode = input}
                                 />
                             </View>
                             <View style={[ThemeStyles.spacing, ThemeStyles.stretch]}>
@@ -111,8 +147,7 @@ export default class GeneratorForm extends Component {
                                             style={[ThemeStyles.onePicker]}
                                             itemStyle={ThemeStyles.onePickerItem}
                                             onValueChange={(itemValue, itemIndex) => this.setState({codeType: itemValue})}>
-                                        <Picker.Item label="CODE39" value="CODE39"/>
-                                        <Picker.Item label="CODE128" value="CODE128"/>
+                                        {pickerItems}
                                     </Picker>
                                     <View style={ThemeStyles.caratWrapper}>
                                         <View style={ThemeStyles.carat}></View>

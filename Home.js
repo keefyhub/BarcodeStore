@@ -46,12 +46,6 @@ export default class Home extends Component {
         };
     }
 
-    static navigationOptions = ({navigation}) => {
-        return {
-            title: 'Home',
-        };
-    };
-
     getData = async () => {
         try {
             const value = await AsyncStorage.getItem('@storage_Key');

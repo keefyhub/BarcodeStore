@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 
 import {
+    Alert,
     Button,
     SafeAreaView,
     ScrollView,
@@ -64,6 +65,25 @@ export default class SingleBarcode extends Component {
         }
     };
 
+    maybeDeleteItem = (item, index) => {
+        Alert.alert(
+            'Hold up!',
+            'Are you sure you want to delete this item?',
+            [
+                {
+                    text: 'OK', onPress: () => this.deleteItem(item, index),
+                },
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+            ],
+        );
+
+        return false;
+    };
+
     deleteItem = async (item, index) => {
         const {navigate} = this.props.navigation;
 
@@ -83,45 +103,30 @@ export default class SingleBarcode extends Component {
     };
 
     render() {
-        const {item, index, color} = this.state;
+        const {item, index} = this.state;
         return (
-            <View style={[ThemeStyles.themeWrapper, {backgroundColor: color}]}>
+            <View style={[ThemeStyles.themeWrapper]}>
                 <SafeAreaView style={ThemeStyles.themeContainer}>
                     <View style={ThemeStyles.container}>
                         <ScrollView style={ThemeStyles.scrollView}>
                             <View style={ThemeStyles.spacing}>
                                 {item.code && this.renderBarcode(item)}
                                 <View style={ThemeStyles.spacing}>
-                                    <Text style={[ThemeStyles.colorWhite, ThemeStyles.title]}>{item.label}</Text>
-                                    <Text style={ThemeStyles.colorWhite}>{item.code}</Text>
-                                    <Text style={ThemeStyles.colorWhite}>{item.type}</Text>
+                                    <Text style={[ThemeStyles.title]}>{item.label}</Text>
+                                    <Text>{item.code}</Text>
+                                    <Text>{item.type}</Text>
                                 </View>
-                            </View>
-                            <View style={[ThemeStyles.buttonRow, ThemeStyles.spacing]}>
-                                <TouchableHighlight style={ThemeStyles.button}
-                                                    onPress={() => this.deleteItem(item, index)}>
-                                    <Text style={ThemeStyles.buttonText}>Delete</Text>
-                                </TouchableHighlight>
                             </View>
                         </ScrollView>
                     </View>
+                    <TouchableHighlight style={[ThemeStyles.button, ThemeStyles.fixedButton]}
+                                        onPress={() => this.maybeDeleteItem(item, index)}>
+                        <Text style={[ThemeStyles.buttonText, ThemeStyles.buttonTextLarge]}>
+                            Delete
+                        </Text>
+                    </TouchableHighlight>
                 </SafeAreaView>
             </View>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        // backgroundColor: Colors.lighter,
-        flex: 1,
-    },
-    scrollView: {},
-    view: {
-        // backgroundColor: Colors.light,
-    },
-    spacing: {
-        marginBottom: 20,
-        marginTop: 20,
-    },
-});

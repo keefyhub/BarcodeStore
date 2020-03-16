@@ -50,7 +50,10 @@ const ThemeStyles = StyleSheet.create({
         position: 'absolute',
         right: 0,
         flex: 1,
-        padding: 10,
+        paddingBottom: 30,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 20,
         borderRadius: 0,
     },
     buttonText: {
@@ -76,9 +79,9 @@ const ThemeStyles = StyleSheet.create({
         alignSelf: 'stretch',
     },
     small: {
-        fontSize: 10,
-        textAlign: 'center',
-        marginBottom: 20,
+        fontSize: 14,
+        marginBottom: 10,
+        marginTop: 10,
     },
     formText: {
         marginBottom: 10,
@@ -92,13 +95,13 @@ const ThemeStyles = StyleSheet.create({
     },
     onePicker: {
         // width: 300,
-        height: 40,
+        height: 100,
         backgroundColor: '#fff',
         borderColor: '#000',
         borderBottomWidth: 1,
     },
     onePickerItem: {
-        height: 40,
+        height: 100,
     },
     caratWrapper: {
         position: 'absolute',
